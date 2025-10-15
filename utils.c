@@ -15,7 +15,7 @@ void dump_workspace(const char *tag) {
     if (tag && *tag) printf("---- workspace dump (%s) ----\n", tag);
     else             printf("---- workspace dump ----\n");
 
-    for (int i = 0; i < MAX_VECS; ++i) {
+    for (int i = 0; i < MAX_VECS; ++i) { // TODO: Cant use max_vecs
         const vector *v = &workspace[i];
         if (v->used) {
             printf("[%02d] used=1 name='%s'  x=%g  y=%g  z=%g\n",
@@ -43,7 +43,7 @@ int tokenize_input(char *user_input, char **tokens, int maxtokens) {
 }
 
 void clear_mem(){ // clears memory
-    for (int i = 0; i < MAX_VECS; ++i) workspace[i].used = 0;
+    for (int i = 0; i < MAX_VECS; ++i) workspace[i].used = 0; //TODO: this will no longer use max_vecs with malloc
     printf("        Memory cleared\n"); 
 }
 
@@ -183,7 +183,7 @@ int assign_vector(const char *name, double x, double y, double z){
             }
         }
         if (idx < 0) {
-            return -1; // full
+            return -1; // full TODO: edit this to use malloc and allocate more mem only return -1 if re alloc failed
         }
         strcpy(workspace[idx].name, name);
         workspace[idx].used = 1;
@@ -223,7 +223,7 @@ void invalid_input(char **tokens, int max_tokens, char *message) {
 }
 
 int in_workspace(const char *name) {
-     for (int i = 0; i < MAX_VECS; ++i) {
+     for (int i = 0; i < MAX_VECS; ++i) { // TODO : cant use max vecs anymore 
         if (workspace[i].used && strcmp(workspace[i].name, name) == 0)
             return i;
     }
@@ -245,13 +245,13 @@ int is_numerical_range(char **tokens, int lo, int hi) {
 }
 
 int any_used(void) {
-    for (int i = 0; i < MAX_VECS; ++i)
+    for (int i = 0; i < MAX_VECS; ++i) // TODO : cannot use MAX_VECS
         if (workspace[i].used == 1) return 1;
     return 0;
 }
 
 int next_used(int prev_idx) {
-    for (int i = prev_idx; i < MAX_VECS; ++i)
+    for (int i = prev_idx; i < MAX_VECS; ++i) // TODO: Cannot use MAX_VECS
         if (workspace[i].used) return i;
     return -1; // none
 }
