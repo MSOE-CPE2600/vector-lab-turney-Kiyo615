@@ -23,9 +23,9 @@ int parse_input(int num_tokens, char **tokens){
             printf("Closing program...\n");
             return 1;
         }else if (!strcmp(tokens[0], "list")){
-            print_workspace(NULL);
+            print_workspace(NULL); // print full workspace
         }else if (in_workspace(tokens[0]) != -1){
-            print_workspace(tokens); 
+            print_workspace(tokens); // print single token
         }else{
             invalid_input(tokens, 1 ,"unknown command: ");
         }

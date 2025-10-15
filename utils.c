@@ -42,7 +42,7 @@ int tokenize_input(char *user_input, char **tokens, int maxtokens) {
     return count;
 }
 
-void clear_mem(){
+void clear_mem(){ // clears memory
     for (int i = 0; i < MAX_VECS; ++i) workspace[i].used = 0;
     printf("        Memory cleared\n"); 
 }
