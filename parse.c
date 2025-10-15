@@ -41,7 +41,10 @@ int parse_input(int num_tokens, char **tokens){
             sscanf(tokens[2], "%lf", &x);
             if (num_tokens >= 4) sscanf(tokens[3], "%lf", &y);
             if (num_tokens >= 5) sscanf(tokens[4], "%lf", &z);
-            assign_vector(tokens[0], x, y, z);
+            int rtn = assign_vector(tokens[0], x, y, z);
+            if(rtn == -1){
+                invalid_input(tokens, num_tokens, "Too many vectors! Please clear and try again.");
+            }
         }else{
             invalid_input(tokens, num_tokens, "Bad vector component");
         }
