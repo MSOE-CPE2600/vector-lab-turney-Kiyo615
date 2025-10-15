@@ -8,7 +8,7 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-#define MAX_VECS 10
+#define MAX_VECS 4
 
 typedef struct {
     char name[32];

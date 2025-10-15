@@ -18,7 +18,6 @@
 vector workspace[MAX_VECS] = {0};
 
 
-
 int main (int argc, char* argv[]){
     
     //num of args 
@@ -32,7 +31,10 @@ int main (int argc, char* argv[]){
         char *tokens[INPUT_SIZE/2] = {0};
         // new line
         printf(">> ");
-        fgets(user_input, sizeof(user_input), stdin);
+        void *point = fgets(user_input, sizeof(user_input), stdin);
+        if (point == NULL){
+            break;
+        }
 
         int num_tokens = tokenize_input(user_input, tokens, sizeof(tokens));
 

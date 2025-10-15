@@ -13,7 +13,6 @@
 #include "vector.h" 
 
 int parse_input(int num_tokens, char **tokens){
-    char operation[1];
 
     if (num_tokens == 1){ //single commands
         //check single tokens
