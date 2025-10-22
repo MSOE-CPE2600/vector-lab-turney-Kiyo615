@@ -43,6 +43,10 @@ int tokenize_input(char *user_input, char **tokens, int maxtokens) {
     return count;
 }
 
+// TODO: make function to allocate memory 
+
+// TODO: make function to ad more space to memory 
+
 size_t get_mem_size(void){
     // Calculate the total size of the array in bytes
     size_t tot = sizeof(workspace);
@@ -56,7 +60,7 @@ size_t get_mem_size(void){
 }
 
 void clear_mem(void){ // clears memory
-    for (size_t i = 0; i < get_mem_size(); ++i) workspace[i].used = 0; 
+    for (size_t i = 0; i < get_mem_size(); ++i) workspace[i].used = 0; //TODO change function to set all veriable to not used and set meme size back to orginal
     printf("        Memory cleared\n"); 
 }
 
