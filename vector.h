@@ -11,7 +11,7 @@
 #define MAX_VECS 4
 
 typedef struct {
-    char name[32];
+    char name[16];
     int used;
     double xval;
     double yval;
