@@ -51,13 +51,12 @@ size_t get_mem_size(void){
     size_t single = sizeof(workspace[0]);
 
     // Calculate the number of elements in the array
-    
     size_t num = tot / single;
     return num; 
 }
 
 void clear_mem(void){ // clears memory
-    for (size_t i = 0; i < get_mem_size(); ++i) workspace[i].used = 0; //TODO: this will no longer use max_vecs with malloc
+    for (size_t i = 0; i < get_mem_size(); ++i) workspace[i].used = 0; 
     printf("        Memory cleared\n"); 
 }
 

@@ -31,23 +31,47 @@ int parse_input(int num_tokens, char **tokens){
     }else if ((num_tokens <= 5 && num_tokens >= 3) && !strcmp(tokens[1], "=")){ //assigmnent - vector
         // assume all vectors are 3-d
         char operation;
-        if (num_tokens == 5){
-            if (math_needed(tokens[3], &operation)){
-                // we doing some math 
-                do_math(tokens, operation);
+        switch (num_tokens) {
+            case 3:
+            case 4: {
+                // we doing some assignment (numerical only)
+                double x = 0, y = 0, z = 0;
+                sscanf(tokens[2], "%lf", &x);
+                if (num_tokens >= 4){
+                    sscanf(tokens[3], "%lf", &y);
+                }
+                if (num_tokens >= 5) {
+                    sscanf(tokens[4], "%lf", &z);
+                }
+                int rtn = assign_vector(tokens[0], x, y, z);
+                if(rtn == -1){
+                    invalid_input(tokens, num_tokens, "Too many vectors! Please clear and try again.");
+                }
+                break;
             }
-        }else if (is_numerical(tokens, 2, 4) || is_numerical(tokens, 2, 3) || is_numerical(tokens, 2, 2)){
-            // we doing some assignment (numerical only)
-            double x = 0, y = 0, z = 0;
-            sscanf(tokens[2], "%lf", &x);
-            if (num_tokens >= 4) sscanf(tokens[3], "%lf", &y);
-            if (num_tokens >= 5) sscanf(tokens[4], "%lf", &z);
-            int rtn = assign_vector(tokens[0], x, y, z);
-            if(rtn == -1){
-                invalid_input(tokens, num_tokens, "Too many vectors! Please clear and try again.");
+            case 5: {
+                if (math_needed(tokens[3], &operation)){
+                    // we doing some math 
+                    do_math(tokens, operation);
+                }else if (is_numerical(tokens, 2, 4) || is_numerical(tokens, 2, 3) || is_numerical(tokens, 2, 2)){
+                    // we doing some assignment (numerical only)
+                    double x = 0, y = 0, z = 0;
+                    sscanf(tokens[2], "%lf", &x);
+                    if (num_tokens >= 4){
+                        sscanf(tokens[3], "%lf", &y);
+                    }
+                    if (num_tokens >= 5) {
+                        sscanf(tokens[4], "%lf", &z);
+                    }
+                    int rtn = assign_vector(tokens[0], x, y, z);
+                    if(rtn == -1){
+                        invalid_input(tokens, num_tokens, "Too many vectors! Please clear and try again.");
+                    }
+                }
+                break;
             }
-        }else{
-            invalid_input(tokens, num_tokens, "Bad vector component");
+            default:
+                invalid_input(tokens, num_tokens, "Bad vector component");
         }
     }else if (num_tokens == 0){
     }else{ // invalid input
