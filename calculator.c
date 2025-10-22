@@ -35,6 +35,7 @@ int main (int argc, char* argv[]){
         if (point == NULL){
             break;
         }
+        printf("mem length: %li\n",get_mem_size());    
 
         int num_tokens = tokenize_input(user_input, tokens, sizeof(tokens));
 
