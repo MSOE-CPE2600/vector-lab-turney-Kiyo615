@@ -7,6 +7,7 @@
  ****************************************/
 #include <stdio.h>
 #include <string.h>
+#include <stddef.h>
 #include "utils.h"
 #include "vector.h"
 
@@ -15,7 +16,7 @@ void dump_workspace(const char *tag) {
     if (tag && *tag) printf("---- workspace dump (%s) ----\n", tag);
     else             printf("---- workspace dump ----\n");
 
-    for (int i = 0; i < MAX_VECS; ++i) { // TODO: Cant use max_vecs
+    for (int i = 0; i < get_mem_size(); ++i) { 
         const vector *v = &workspace[i];
         if (v->used) {
             printf("[%02d] used=1 name='%s'  x=%g  y=%g  z=%g\n",
@@ -42,8 +43,21 @@ int tokenize_input(char *user_input, char **tokens, int maxtokens) {
     return count;
 }
 
-void clear_mem(){ // clears memory
-    for (int i = 0; i < MAX_VECS; ++i) workspace[i].used = 0; //TODO: this will no longer use max_vecs with malloc
+size_t get_mem_size(void){
+    // Calculate the total size of the array in bytes
+    size_t tot = sizeof(workspace);
+
+    // Calculate the size of a single struct element in bytes
+    size_t single = sizeof(workspace[0]);
+
+    // Calculate the number of elements in the array
+    
+    size_t num = tot / single;
+    return num; 
+}
+
+void clear_mem(void){ // clears memory
+    for (int i = 0; i < get_mem_size(); ++i) workspace[i].used = 0; //TODO: this will no longer use max_vecs with malloc
     printf("        Memory cleared\n"); 
 }
 
@@ -66,21 +80,19 @@ void print_workspace(char **tokens){
     }
 }
 
-int math_needed(char **tokens, int length_tokens, char* operand){
-    for (int i = 0; i<length_tokens; i++){
-        if(!strcmp(tokens[i],"*")){
-            // hey we doing multiplication
-            *operand = '*';
-            return 1;
-        }else if (!strcmp(tokens[i],"+")){
-            // hey we doing addition
-            *operand = '+';
-            return 1;
-        }else if (!strcmp(tokens[i],"-")){
-            // hey we doing subtraction
-            *operand = '-';
-            return 1;
-        }
+int math_needed(char *token, char* operand){
+    if(!strcmp(token,"*")){
+        // hey we doing multiplication
+        *operand = '*';
+        return 1;
+    }else if (!strcmp(token,"+")){
+        // hey we doing addition
+        *operand = '+';
+        return 1;
+    }else if (!strcmp(token,"-")){
+        // hey we doing subtraction
+        *operand = '-';
+        return 1;
     }
     return 0;
 }
@@ -177,13 +189,13 @@ int assign_vector(const char *name, double x, double y, double z){
     int idx = in_workspace(name);
     if (idx < 0) {
         // find first free slot
-        for (int i = 0; i < MAX_VECS; ++i) {
+        for (int i = 0; i < get_mem_size(); ++i) {
             if (!workspace[i].used) { 
                 idx = i; break; 
             }
         }
         if (idx < 0) {
-            return -1; // full TODO: edit this to use malloc and allocate more mem only return -1 if re alloc failed
+            return -1; // full TODO: edit this to use malloc and realloc more mem only return -1 if re alloc failed
         }
         strcpy(workspace[idx].name, name);
         workspace[idx].used = 1;
@@ -223,7 +235,7 @@ void invalid_input(char **tokens, int max_tokens, char *message) {
 }
 
 int in_workspace(const char *name) {
-     for (int i = 0; i < MAX_VECS; ++i) { // TODO : cant use max vecs anymore 
+     for (int i = 0; i < get_mem_size(); ++i) {  
         if (workspace[i].used && strcmp(workspace[i].name, name) == 0)
             return i;
     }
@@ -245,13 +257,13 @@ int is_numerical_range(char **tokens, int lo, int hi) {
 }
 
 int any_used(void) {
-    for (int i = 0; i < MAX_VECS; ++i) // TODO : cannot use MAX_VECS
+    for (int i = 0; i < get_mem_size(); ++i) 
         if (workspace[i].used == 1) return 1;
     return 0;
 }
 
 int next_used(int prev_idx) {
-    for (int i = prev_idx; i < MAX_VECS; ++i) // TODO: Cannot use MAX_VECS
+    for (int i = prev_idx; i < get_mem_size(); ++i) 
         if (workspace[i].used) return i;
     return -1; // none
 }
