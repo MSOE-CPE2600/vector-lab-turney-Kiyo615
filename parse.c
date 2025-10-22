@@ -31,10 +31,12 @@ int parse_input(int num_tokens, char **tokens){
     }else if ((num_tokens <= 5 && num_tokens >= 3) && !strcmp(tokens[1], "=")){ //assigmnent - vector
         // assume all vectors are 3-d
         char operation;
-        if (math_needed(tokens, num_tokens, &operation)){
-            // we doing some math 
-            do_math(tokens, operation);
-        }else if (is_numerical_range(tokens, 2, 4) || is_numerical_range(tokens, 2, 3) || is_numerical_range(tokens, 2, 2)){
+        if (num_tokens == 5){
+            if (math_needed(tokens[3], &operation)){
+                // we doing some math 
+                do_math(tokens, operation);
+            }
+        }else if (is_numerical(tokens, 2, 4) || is_numerical(tokens, 2, 3) || is_numerical(tokens, 2, 2)){
             // we doing some assignment (numerical only)
             double x = 0, y = 0, z = 0;
             sscanf(tokens[2], "%lf", &x);

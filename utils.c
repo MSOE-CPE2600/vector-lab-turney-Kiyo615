@@ -16,13 +16,13 @@ void dump_workspace(const char *tag) {
     if (tag && *tag) printf("---- workspace dump (%s) ----\n", tag);
     else             printf("---- workspace dump ----\n");
 
-    for (int i = 0; i < get_mem_size(); ++i) { 
+    for (size_t i = 0; i < get_mem_size(); ++i) { 
         const vector *v = &workspace[i];
         if (v->used) {
-            printf("[%02d] used=1 name='%s'  x=%g  y=%g  z=%g\n",
+            printf("[%02ld] used=1 name='%s'  x=%g  y=%g  z=%g\n",
                    i, v->name, v->xval, v->yval, v->zval);
         } else {
-            printf("[%02d] used=0\n", i);
+            printf("[%02ld] used=0\n", i);
         }
     }
     printf("------------------------------\n");
@@ -57,7 +57,7 @@ size_t get_mem_size(void){
 }
 
 void clear_mem(void){ // clears memory
-    for (int i = 0; i < get_mem_size(); ++i) workspace[i].used = 0; //TODO: this will no longer use max_vecs with malloc
+    for (size_t i = 0; i < get_mem_size(); ++i) workspace[i].used = 0; //TODO: this will no longer use max_vecs with malloc
     printf("        Memory cleared\n"); 
 }
 
@@ -108,8 +108,8 @@ int do_math(char **tokens, char op){
     double rx=0, ry=0, rz=0;  
     double scalar=0;
     
-    int lhs_is_num = is_numerical_range(tokens, 2, 2);
-    int rhs_is_num = is_numerical_range(tokens, 4, 4);
+    int lhs_is_num = is_numerical(tokens, 2, 2);
+    int rhs_is_num = is_numerical(tokens, 4, 4);
 
     //printf("operation: %c\n", op);
 
@@ -189,7 +189,7 @@ int assign_vector(const char *name, double x, double y, double z){
     int idx = in_workspace(name);
     if (idx < 0) {
         // find first free slot
-        for (int i = 0; i < get_mem_size(); ++i) {
+        for (size_t i = 0; i < get_mem_size(); ++i) {
             if (!workspace[i].used) { 
                 idx = i; break; 
             }
@@ -235,14 +235,14 @@ void invalid_input(char **tokens, int max_tokens, char *message) {
 }
 
 int in_workspace(const char *name) {
-     for (int i = 0; i < get_mem_size(); ++i) {  
+     for (size_t i = 0; i < get_mem_size(); ++i) {  
         if (workspace[i].used && strcmp(workspace[i].name, name) == 0)
             return i;
     }
     return -1;
 }
 
-int is_numerical_range(char **tokens, int lo, int hi) {
+int is_numerical(char **tokens, int lo, int hi) {
     if (!tokens || lo < 0 || hi < lo) return 0;
 
     for (int i = lo; i <= hi; i++) {
@@ -257,13 +257,13 @@ int is_numerical_range(char **tokens, int lo, int hi) {
 }
 
 int any_used(void) {
-    for (int i = 0; i < get_mem_size(); ++i) 
+    for (size_t i = 0; i < get_mem_size(); ++i) 
         if (workspace[i].used == 1) return 1;
     return 0;
 }
 
 int next_used(int prev_idx) {
-    for (int i = prev_idx; i < get_mem_size(); ++i) 
+    for (size_t i = prev_idx; i < get_mem_size(); ++i) 
         if (workspace[i].used) return i;
     return -1; // none
 }
