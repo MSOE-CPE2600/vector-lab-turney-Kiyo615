@@ -11,11 +11,9 @@
 ---
 
 ## Build
-
-### Prerequisites
-- C compiler (GCC or Clang)
-- POSIX like environment (Linux or macOS). Windows works through WSL or MSYS2.
+makefile
 
 ### Simple build
 ```bash
+
 gcc -Wall -Wextra -o calc.c
