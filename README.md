@@ -13,7 +13,9 @@
 ---
 
 ## Build
+```bash
 makefile
+```
 
 ### Simple build
 ```bash
