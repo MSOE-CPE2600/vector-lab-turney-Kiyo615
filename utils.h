@@ -8,6 +8,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "vector.h"
+
 /**
  * @brief Dump the workspace contents to stdout for debugging.
  * @param[in] tag Optional label printed in the header.
@@ -25,13 +27,15 @@ void dump_workspace(const char *tag);
  */
 int tokenize_input(char *user_input, char **tokens, int maxtokens);
 
-size_t get_mem_size(void);
-
 /**
  * @brief Clear all stored vectors from the workspace.
  * @return void
  */
-void clear_mem(void);
+void clear_mem();
+
+int load_workspace(char **tokens);
+
+int save_workspace(char **tokens);
 
 /**
  * @brief Check whether a token is an operator and output it.

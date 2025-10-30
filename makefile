@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-c -Wall -Wextra -O2
+CFLAGS=-c -g -Wall -Wextra -O2
 LDFLAGS=-lm
 SOURCES= calculator.c utils.c parse.c
 OBJECTS=$(SOURCES:.c=.o)

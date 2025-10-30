@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include "utils.h"
 #include "vector.h" 
 
@@ -27,6 +28,23 @@ int parse_input(int num_tokens, char **tokens){
             print_workspace(tokens); // print single token
         }else{
             invalid_input(tokens, 1 ,"unknown command: ");
+            return 0;
+        }
+    }else if (num_tokens == 2){ //single commands
+        //check single tokens
+        int rtn = 0;
+        if (!strcmp(tokens[0], "load")){
+            // read file 
+            rtn = load_workspace(tokens);
+        }else if (!strcmp(tokens[0], "save")){
+            // save file 
+            rtn = save_workspace(tokens);
+        }else{
+            invalid_input(tokens, 1 ,"unknown command: ");
+            return 0;
+        }
+        if (rtn){
+            return 0;
         }
     }else if ((num_tokens <= 5 && num_tokens >= 3) && !strcmp(tokens[1], "=")){ //assigmnent - vector
         // assume all vectors are 3-d
@@ -46,6 +64,7 @@ int parse_input(int num_tokens, char **tokens){
                 int rtn = assign_vector(tokens[0], x, y, z);
                 if(rtn == -1){
                     invalid_input(tokens, num_tokens, "Too many vectors! Please clear and try again.");
+                    return 0;
                 }
                 break;
             }
@@ -66,16 +85,20 @@ int parse_input(int num_tokens, char **tokens){
                     int rtn = assign_vector(tokens[0], x, y, z);
                     if(rtn == -1){
                         invalid_input(tokens, num_tokens, "Too many vectors! Please clear and try again.");
+                        return 0;
                     }
                 }
                 break;
             }
             default:
                 invalid_input(tokens, num_tokens, "Bad vector component");
+                return 0;
         }
     }else if (num_tokens == 0){
+        return 0;
     }else{ // invalid input
         invalid_input(tokens, 132/2 ,"Invalid calculation or operation: ");  
+        return 0;
     }
     return 0;
 }

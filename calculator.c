@@ -15,8 +15,8 @@
 
 #define INPUT_SIZE 132
 
-vector workspace[MAX_VECS] = {0};
-
+vector *workspace = NULL; 
+int mem_size = 1;
 
 int main (int argc, char* argv[]){
     
@@ -25,33 +25,37 @@ int main (int argc, char* argv[]){
         print_help();
 
     }else if(argc == 1){ //run program 
+        
+        workspace = malloc(MAX_VECS * sizeof(vector));
 
-    while (1){
-        char user_input[INPUT_SIZE];
-        char *tokens[INPUT_SIZE/2] = {0};
-        // new line
-        printf(">> ");
-        void *point = fgets(user_input, sizeof(user_input), stdin);
-        if (point == NULL){
-            break;
+        while (1){
+            char user_input[INPUT_SIZE];
+            char *tokens[INPUT_SIZE/2] = {0};
+            // new line
+            printf(">> ");
+            void *ptr = fgets(user_input, sizeof(user_input), stdin);
+            if (ptr == NULL){
+                break;
+            }
+
+            //printf("mem length: %i\n",mem_size);    
+
+            int num_tokens = tokenize_input(user_input, tokens, sizeof(tokens));
+
+            // for debugging
+            /*for (int i = 0; i < num_tokens; i++) {
+                printf("token[%d] = %s\n", i, tokens[i]);
+            }*/
+
+            if (parse_input(num_tokens, tokens)){
+                free(workspace); 
+                exit(0);
+            }
         }
-        printf("mem length: %li\n",get_mem_size());    
 
-        int num_tokens = tokenize_input(user_input, tokens, sizeof(tokens));
-
-        // for debugging
-        /*for (int i = 0; i < num_tokens; i++) {
-            printf("token[%d] = %s\n", i, tokens[i]);
-        }*/
-
-        if (parse_input(num_tokens, tokens)){
-            exit(0);
+        }else{ //invalid input
+            printf("Please run the program or use '-h' for help\n");
         }
-    }
-
-    }else{ //invalid input
-        printf("Please run the program or use '-h' for help\n");
-    }
-    
-    return 0;
+        
+        return 0;
 }

@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stddef.h>
+#include <stdlib.h>
 #include "utils.h"
 #include "vector.h"
 
@@ -16,13 +17,13 @@ void dump_workspace(const char *tag) {
     if (tag && *tag) printf("---- workspace dump (%s) ----\n", tag);
     else             printf("---- workspace dump ----\n");
 
-    for (size_t i = 0; i < get_mem_size(); ++i) { 
+    for (int i = 0; i < mem_size; ++i) { 
         const vector *v = &workspace[i];
         if (v->used) {
-            printf("[%02ld] used=1 name='%s'  x=%g  y=%g  z=%g\n",
+            printf("[%02d] used=1 name='%s'  x=%g  y=%g  z=%g\n",
                    i, v->name, v->xval, v->yval, v->zval);
         } else {
-            printf("[%02ld] used=0\n", i);
+            printf("[%02d] used=0\n", i);
         }
     }
     printf("------------------------------\n");
@@ -43,25 +44,68 @@ int tokenize_input(char *user_input, char **tokens, int maxtokens) {
     return count;
 }
 
-// TODO: make function to allocate memory 
-
-// TODO: make function to ad more space to memory 
-
-size_t get_mem_size(void){
-    // Calculate the total size of the array in bytes
-    size_t tot = sizeof(workspace);
-
-    // Calculate the size of a single struct element in bytes
-    size_t single = sizeof(workspace[0]);
-
-    // Calculate the number of elements in the array
-    size_t num = tot / single;
-    return num; 
+void clear_mem(){ // clears memory
+    int idx = 1;
+    while (workspace[idx].used == 1){
+        workspace[idx].used = 0;
+        idx++;
+    }
+    printf("        Memory cleared\n"); 
 }
 
-void clear_mem(void){ // clears memory
-    for (size_t i = 0; i < get_mem_size(); ++i) workspace[i].used = 0; //TODO change function to set all veriable to not used and set meme size back to orginal
-    printf("        Memory cleared\n"); 
+int load_workspace(char **tokens){
+    // assume there are only two tokens
+    FILE *fp;
+    //make sure the file name ends in csv
+    fp = fopen(tokens[1],"r");
+    if (!fp){
+        invalid_input(tokens,2,"Error opening file");
+        return 1;
+    }
+
+    char line[256];
+    // make sure work book is formatted right 
+    // set workbook to workspace 
+    int errors = 0;
+    while (fgets(line, sizeof line, fp)) {
+        char name[32];
+        int x, y, z;
+        if (sscanf(line, " %31[^,], %d , %d , %d", name, &x, &y, &z) == 4) {
+            int rtn = assign_vector(name,x,y,z);
+            if (rtn == -1){
+                return 1;
+            }
+        }else if(errors == 0){
+            errors++;
+            invalid_input(tokens,2,"One or more vectors are bad in file:");
+        }
+    }
+    fclose(fp);
+    return 0;
+}
+
+int save_workspace(char **tokens){
+    FILE *fp = fopen(tokens[1], "w");
+    if (!fp) {
+        invalid_input(tokens, 2, "Error opening file for write");
+        return 1;
+    }
+
+    for (int i = 0; i < mem_size; i++) {
+        if (!workspace[i].used) continue;
+        if (fprintf(fp, "%s,%.15g,%.15g,%.15g\n",
+                    workspace[i].name, workspace[i].xval, workspace[i].yval, workspace[i].zval) < 0) {
+            fclose(fp);
+            invalid_input(tokens, 2, "Write error");
+            return 1;
+        }
+    }
+    if (fclose(fp) != 0) {
+        invalid_input(tokens, 2, "Close error (disk full?)");
+        return 1;
+    }
+    printf("        Wrote workspace to \" %s \"\n",tokens[1]);
+    return 0;
 }
 
 void print_workspace(char **tokens){
@@ -190,15 +234,16 @@ int do_math(char **tokens, char op){
 
 int assign_vector(const char *name, double x, double y, double z){
     int idx = in_workspace(name);
-    if (idx < 0) {
-        // find first free slot
-        for (size_t i = 0; i < get_mem_size(); ++i) {
-            if (!workspace[i].used) { 
-                idx = i; break; 
-            }
-        }
-        if (idx < 0) {
-            return -1; // full TODO: edit this to use malloc and realloc more mem only return -1 if re alloc failed
+    if (idx < 0 ) {
+        //assign new memory
+        mem_size = mem_size + 1;
+        vector *temp = realloc(workspace, mem_size * sizeof(vector));
+        if (temp == NULL){
+            return -1; // full
+        }else{
+            workspace = temp;
+            temp = NULL;
+            idx = (int)mem_size-1;
         }
         strcpy(workspace[idx].name, name);
         workspace[idx].used = 1;
@@ -238,7 +283,7 @@ void invalid_input(char **tokens, int max_tokens, char *message) {
 }
 
 int in_workspace(const char *name) {
-     for (size_t i = 0; i < get_mem_size(); ++i) {  
+     for (int i = 0; i < mem_size; ++i) {  
         if (workspace[i].used && strcmp(workspace[i].name, name) == 0)
             return i;
     }
@@ -260,13 +305,13 @@ int is_numerical(char **tokens, int lo, int hi) {
 }
 
 int any_used(void) {
-    for (size_t i = 0; i < get_mem_size(); ++i) 
+    for (int i = 0; i < mem_size; ++i) 
         if (workspace[i].used == 1) return 1;
     return 0;
 }
 
 int next_used(int prev_idx) {
-    for (size_t i = prev_idx; i < get_mem_size(); ++i) 
+    for (int i = prev_idx; i < mem_size; ++i) 
         if (workspace[i].used) return i;
     return -1; // none
 }

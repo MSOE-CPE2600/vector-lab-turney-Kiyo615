@@ -8,7 +8,7 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-#define MAX_VECS 4
+#define MAX_VECS 1
 
 typedef struct {
     char name[16];
@@ -18,6 +18,8 @@ typedef struct {
     double zval;
 }vector;
 
-extern vector workspace[MAX_VECS];
+extern vector *workspace;
+
+extern int mem_size; 
 
 #endif
