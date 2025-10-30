@@ -349,6 +349,8 @@ void print_help(void) {
         "  result = a + b   Do the operation and store the result\n"
         "  result = a - b\n"
         "  result = a * k   (Spaces required around = and operators)\n"
+        "  load example.csv Load workspace from file\n"
+        "  save example.csv Save workspace to file\n"
         "\n"
         "Display format:\n"
         "  Values are printed as: name = x, y, z\n"
@@ -362,6 +364,8 @@ void print_help(void) {
         "  c = a + b\n"
         "  a = 2.5 * a\n"
         "  sum = a + b\n"
+        "  load one.csv\n"
+        "  save two.csv\n"
         "  list\n"
         "\n"
     );
