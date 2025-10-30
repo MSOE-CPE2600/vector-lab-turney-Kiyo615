@@ -4,3 +4,7 @@
 *.o
 # the exe file
 calc
+# the .csv files
+*.csv
+# the vscode folder
+.vscode
